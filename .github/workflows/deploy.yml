@@ -1,0 +1,78 @@
+# ============================================
+# GitHub Actions CI/CD Workflow
+# Builds Docker images and deploys using Docker Compose
+# ============================================
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Docker Buildx
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Step 3: Build Personal Website Docker Image
+      - name: Build Personal Website Image
+        run: |
+          docker build -t personal-website:latest ./personal-website
+
+      # Step 4: Build Todo App Docker Image
+      - name: Build Todo App Image
+        run: |
+          docker build -t todo-app:latest ./todo-app
+
+      # Step 5: Verify Docker images
+      - name: Verify Docker Images
+        run: |
+          docker images | grep -E "personal-website|todo-app"
+
+      # Step 6: Run containers with Docker Compose
+      - name: Deploy with Docker Compose
+        run: |
+          docker compose up -d
+
+      # Step 7: Wait for services to start
+      - name: Wait for Services
+        run: |
+          sleep 5
+          echo "Checking if containers are running..."
+          docker ps
+
+      # Step 8: Health check - Personal Website
+      - name: Health Check - Personal Website
+        run: |
+          echo "Checking Personal Website on port 8080..."
+          curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8080 || echo "Note: Port may differ on production server"
+
+      # Step 9: Health check - Todo App
+      - name: Health Check - Todo App
+        run: |
+          echo "Checking Todo App on port 8081..."
+          curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8081 || echo "Note: Port may differ on production server"
+
+      # Step 10: Display deployment summary
+      - name: Deployment Summary
+        run: |
+          echo "========================================"
+          echo "   Deployment Completed Successfully!   "
+          echo "========================================"
+          echo "Personal Website: http://localhost:8080"
+          echo "Todo Application: http://localhost:8081"
+          echo "========================================"

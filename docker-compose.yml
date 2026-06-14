@@ -1,0 +1,35 @@
+# ============================================
+# Docker Compose Configuration
+# Orchestrates Personal Website + Todo App
+# Both applications run on the same server
+# ============================================
+version: "3.8"
+
+services:
+  # Personal Website - runs on port 8080
+  personal-website:
+    build:
+      context: ./personal-website
+      dockerfile: Dockerfile
+    container_name: personal-website
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  # Todo Application - runs on port 8081
+  todo-app:
+    build:
+      context: ./todo-app
+      dockerfile: Dockerfile
+    container_name: todo-app
+    ports:
+      - "8081:80"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Application</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>📋 Todo App</h1>
+            <p class="subtitle">Stay organized, get things done</p>
+        </header>
+
+        <div class="todo-input-section">
+            <form id="todo-form">
+                <input
+                    type="text"
+                    id="todo-input"
+                    placeholder="What needs to be done?"
+                    autocomplete="off"
+                    required
+                >
+                <button type="submit" class="btn-add">Add</button>
+            </form>
+        </div>
+
+        <div class="todo-filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+        </div>
+
+        <div class="todo-stats">
+            <span id="tasks-left">0 tasks remaining</span>
+            <button id="clear-completed" class="btn-clear">Clear Completed</button>
+        </div>
+
+        <ul id="todo-list" class="todo-list">
+            <!-- Todo items will be rendered here by JavaScript -->
+        </ul>
+
+        <div class="empty-state" id="empty-state">
+            <p>🎉 No tasks yet! Add one above.</p>
+        </div>
+    </div>
+
+    <footer class="app-footer">
+        <p>Open Source Todo App | Lab12 Final Project</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
