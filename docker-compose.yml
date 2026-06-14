@@ -3,7 +3,6 @@
 # Orchestrates Personal Website + Todo App
 # Both applications run on the same server
 # ============================================
-version: "3.8"
 
 services:
   # Personal Website - runs on port 8080

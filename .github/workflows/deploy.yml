@@ -24,55 +24,59 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      # Step 2: Set up Docker Buildx
+      # Step 2: Set up Docker Buildx for faster builds
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      # Step 3: Build Personal Website Docker Image
-      - name: Build Personal Website Image
+      # Step 3: Build and deploy both services with Docker Compose
+      - name: Build and Deploy with Docker Compose
         run: |
-          docker build -t personal-website:latest ./personal-website
+          docker compose up -d --build
 
-      # Step 4: Build Todo App Docker Image
-      - name: Build Todo App Image
+      # Step 4: Verify containers are running
+      - name: Verify Running Containers
         run: |
-          docker build -t todo-app:latest ./todo-app
-
-      # Step 5: Verify Docker images
-      - name: Verify Docker Images
-        run: |
-          docker images | grep -E "personal-website|todo-app"
-
-      # Step 6: Run containers with Docker Compose
-      - name: Deploy with Docker Compose
-        run: |
-          docker compose up -d
-
-      # Step 7: Wait for services to start
-      - name: Wait for Services
-        run: |
+          echo "Waiting for services to start..."
           sleep 5
-          echo "Checking if containers are running..."
+          echo "=== Running Containers ==="
+          docker compose ps
+          echo "=== All Containers ==="
           docker ps
 
-      # Step 8: Health check - Personal Website
+      # Step 5: Health check - Personal Website
       - name: Health Check - Personal Website
         run: |
           echo "Checking Personal Website on port 8080..."
-          curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8080 || echo "Note: Port may differ on production server"
+          for i in 1 2 3; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080) && break || sleep 2
+          done
+          echo "HTTP Status: ${STATUS:-timeout}"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "304" ]; then
+            echo "✅ Personal Website is healthy!"
+          else
+            echo "⚠️ Personal Website returned status: ${STATUS:-timeout}"
+          fi
 
-      # Step 9: Health check - Todo App
+      # Step 6: Health check - Todo App
       - name: Health Check - Todo App
         run: |
           echo "Checking Todo App on port 8081..."
-          curl -f -s -o /dev/null -w "HTTP Status: %{http_code}\n" http://localhost:8081 || echo "Note: Port may differ on production server"
+          for i in 1 2 3; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8081) && break || sleep 2
+          done
+          echo "HTTP Status: ${STATUS:-timeout}"
+          if [ "$STATUS" = "200" ] || [ "$STATUS" = "304" ]; then
+            echo "✅ Todo App is healthy!"
+          else
+            echo "⚠️ Todo App returned status: ${STATUS:-timeout}"
+          fi
 
-      # Step 10: Display deployment summary
+      # Step 7: Display deployment summary
       - name: Deployment Summary
         run: |
-          echo "========================================"
-          echo "   Deployment Completed Successfully!   "
-          echo "========================================"
+          echo "=========================================="
+          echo "   ✅ Deployment Completed Successfully!  "
+          echo "=========================================="
           echo "Personal Website: http://localhost:8080"
           echo "Todo Application: http://localhost:8081"
-          echo "========================================"
+          echo "=========================================="

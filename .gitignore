@@ -1,6 +1,7 @@
 # OS files
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Editor
 .vscode/
@@ -8,3 +9,13 @@ Thumbs.db
 
 # Docker
 *.log
+.docker/
+
+# Node (if any)
+node_modules/
+
+# Temp files
+*.tmp
+*.swp
+*.swo
+*~
