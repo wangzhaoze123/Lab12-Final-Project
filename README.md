@@ -26,9 +26,11 @@ This project demonstrates containerized web application deployment using **Docke
 
 ### Team Members & Contribution
 
-| Name | Student ID | Contribution % |
-|------|-----------|----------------|
-| 汪兆泽 | 20242203 | 100% |
+| Name | Student ID | Email | Contribution % |
+|------|-----------|-------|----------------|
+| 汪兆泽 | 20242203 | wangzhaozhe@nmu.edu.cn | 34% |
+| 张艺博 | 20242202 | zhangyibo@nmu.edu.cn | 33% |
+| 秦皓 | 20242229 | qinhao@nmu.edu.cn | 33% |
 
 ---
 
