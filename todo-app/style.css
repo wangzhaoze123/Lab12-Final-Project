@@ -186,6 +186,19 @@ body {
     border-radius: 0.5rem;
 }
 
+/* Edit input (appears on double-click) */
+.edit-input {
+    flex: 1;
+    font-size: 1rem;
+    padding: 0.35rem 0.5rem;
+    border: 2px solid var(--primary);
+    border-radius: 0.4rem;
+    outline: none;
+    color: var(--text);
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
 @keyframes slideIn {
     from {
         opacity: 0;

@@ -8,8 +8,8 @@
 
 This project demonstrates containerized web application deployment using **Docker**, **Docker Compose**, and **GitHub Actions CI/CD**. It deploys two applications simultaneously on a single server:
 
-1. **Personal Website** - Portfolio site with personal information
-2. **Todo Application** - Interactive task management app
+1. **Personal Website** - Portfolio site with personal information (Port 8080)
+2. **Todo Application** - Interactive task management app (Port 8081)
 
 ---
 
@@ -22,6 +22,7 @@ This project demonstrates containerized web application deployment using **Docke
 | **University** | North Minzu University (北方民族大学) |
 | **Major** | Software Engineering |
 | **Email** | wangzhaozhe@nmu.edu.cn |
+| **GitHub** | [wangzhaoze123](https://github.com/wangzhaoze123) |
 
 ### Team Members & Contribution
 
@@ -39,10 +40,10 @@ This project demonstrates containerized web application deployment using **Docke
 
 ## 🌐 Application URLs
 
-| Application | URL |
-|-------------|-----|
-| **Personal Website** | `http://[YOUR_SERVER_IP]:8080` |
-| **Todo Application** | `http://[YOUR_SERVER_IP]:8081` |
+| Application | Local URL | Server URL |
+|-------------|-----------|------------|
+| **Personal Website** | `http://localhost:8080` | `http://[YOUR_SERVER_IP]:8080` |
+| **Todo Application** | `http://localhost:8081` | `http://[YOUR_SERVER_IP]:8081` |
 
 > Replace `[YOUR_SERVER_IP]` with your actual server IP address or domain name.
 
@@ -86,8 +87,8 @@ Lab12-Final-Project/
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/[YOUR_USERNAME]/[REPO_NAME].git
-cd [REPO_NAME]
+git clone https://github.com/wangzhaoze123/Lab12-Final-Project.git
+cd Lab12-Final-Project
 
 # 2. Add your profile photo
 # Place your photo at: personal-website/images/profile.jpg
@@ -179,7 +180,7 @@ This project uses **GitHub Actions** for automated build and deployment:
 
 ## 📹 Demo Video
 
-[Watch the demo video]([YOUR_VIDEO_URL])
+[Watch the demo video](./demo.mp4) *(Upload your video to the repository or provide a link)*
 
 ---
 

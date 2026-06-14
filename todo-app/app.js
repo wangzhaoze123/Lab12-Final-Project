@@ -1,6 +1,8 @@
 // ============================================
 // Todo Application - Vanilla JavaScript
-// Store todos in localStorage for persistence
+// Stores todos in localStorage for persistence
+// Uses event delegation for better performance
+// Based on TodoMVC open-source architecture
 // ============================================
 
 class TodoApp {
@@ -19,11 +21,62 @@ class TodoApp {
         this.clearCompletedBtn = document.getElementById('clear-completed');
         this.filterBtns = document.querySelectorAll('.filter-btn');
 
+        // Form submit: add new todo
         this.todoForm.addEventListener('submit', (e) => this.addTodo(e));
+
+        // Clear completed button
         this.clearCompletedBtn.addEventListener('click', () => this.clearCompleted());
+
+        // Filter buttons
         this.filterBtns.forEach(btn => {
-            btn.addEventListener('click', (e) => this.setFilter(e.target.dataset.filter));
+            btn.addEventListener('click', () => this.setFilter(btn.dataset.filter));
         });
+
+        // Event delegation: handle checkbox toggle, delete, and edit on the todo list
+        this.todoList.addEventListener('click', (e) => {
+            const todoItem = e.target.closest('.todo-item');
+            if (!todoItem) return;
+            const id = Number(todoItem.dataset.id);
+
+            if (e.target.classList.contains('todo-checkbox')) {
+                this.toggleTodo(id);
+            } else if (e.target.closest('.btn-delete')) {
+                this.deleteTodo(id);
+            }
+        });
+
+        // Event delegation: handle double-click to edit
+        this.todoList.addEventListener('dblclick', (e) => {
+            const todoItem = e.target.closest('.todo-item');
+            if (!todoItem) return;
+            // Don't trigger edit when clicking checkbox or delete button
+            if (e.target.classList.contains('todo-checkbox') || e.target.closest('.btn-delete')) return;
+
+            const id = Number(todoItem.dataset.id);
+            this.startEdit(id, todoItem);
+        });
+
+        // Handle pressing Enter key to finish editing
+        this.todoList.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.classList.contains('edit-input')) {
+                e.preventDefault();
+                const todoItem = e.target.closest('.todo-item');
+                const id = Number(todoItem.dataset.id);
+                this.finishEdit(id, e.target.value.trim());
+            } else if (e.key === 'Escape' && e.target.classList.contains('edit-input')) {
+                e.preventDefault();
+                this.render();
+            }
+        });
+
+        // Handle blur on edit input (click away to save)
+        this.todoList.addEventListener('blur', (e) => {
+            if (e.target.classList.contains('edit-input')) {
+                const todoItem = e.target.closest('.todo-item');
+                const id = Number(todoItem.dataset.id);
+                this.finishEdit(id, e.target.value.trim());
+            }
+        }, true); // Use capture phase since blur doesn't bubble
 
         this.render();
     }
@@ -63,9 +116,46 @@ class TodoApp {
     }
 
     clearCompleted() {
+        const hadCompleted = this.todos.some(t => t.completed);
+        if (!hadCompleted) return;
         this.todos = this.todos.filter(t => !t.completed);
         this.save();
         this.render();
+    }
+
+    startEdit(id, todoItem) {
+        const todo = this.todos.find(t => t.id === id);
+        if (!todo || todo.completed) return;
+
+        const textSpan = todoItem.querySelector('.todo-text');
+        const currentText = textSpan.textContent;
+
+        // Replace span with input
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'edit-input';
+        input.value = currentText;
+        textSpan.replaceWith(input);
+        input.focus();
+        // Place cursor at end
+        input.setSelectionRange(input.value.length, input.value.length);
+    }
+
+    finishEdit(id, newText) {
+        if (!newText) {
+            // Empty text: delete the todo
+            this.deleteTodo(id);
+            return;
+        }
+        const todo = this.todos.find(t => t.id === id);
+        if (todo && todo.text !== newText) {
+            todo.text = newText;
+            this.save();
+            this.render();
+        } else if (todo && todo.text === newText) {
+            // No change, just re-render
+            this.render();
+        }
     }
 
     setFilter(filter) {
@@ -109,10 +199,11 @@ class TodoApp {
     render() {
         const filtered = this.getFilteredTodos();
         const activeCount = this.todos.filter(t => !t.completed).length;
+        const completedCount = this.todos.filter(t => t.completed).length;
 
         // Update stats
         this.tasksLeft.textContent = `${activeCount} task${activeCount !== 1 ? 's' : ''} remaining`;
-        this.clearCompletedBtn.disabled = this.todos.every(t => !t.completed);
+        this.clearCompletedBtn.disabled = completedCount === 0;
 
         // Render list
         if (filtered.length === 0) {
@@ -130,14 +221,14 @@ class TodoApp {
                         type="checkbox"
                         class="todo-checkbox"
                         ${todo.completed ? 'checked' : ''}
-                        onchange="todoApp.toggleTodo(${todo.id})"
+                        aria-label="${todo.completed ? 'Mark incomplete' : 'Mark complete'}"
                     >
                     <span class="todo-text">${this.escapeHtml(todo.text)}</span>
                     <span class="todo-date">${this.formatDate(todo.createdAt)}</span>
                     <button
                         class="btn-delete"
-                        onclick="todoApp.deleteTodo(${todo.id})"
                         title="Delete task"
+                        aria-label="Delete task"
                     >🗑️</button>
                 </li>
             `).join('');
@@ -151,5 +242,7 @@ class TodoApp {
     }
 }
 
-// Initialize the app
-const todoApp = new TodoApp();
+// Initialize the app when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+    window.todoApp = new TodoApp();
+});
